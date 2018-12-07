@@ -4,9 +4,46 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:vizzy"
+        xmlns:control="clr-namespace:WpfHexaEditor;assembly=WPFHexaEditor"
         mc:Ignorable="d"
-        Title="MainWindow" Height="450" Width="800">
-    <Grid>
-        
+        Title="MainWindow" Height="960" Width="1714.556">
+    <Grid x:Name="grid">
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="851*"/>
+            <ColumnDefinition Width="5"/>
+            <ColumnDefinition Width="852*"/>
+        </Grid.ColumnDefinitions>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="40"/>
+            <RowDefinition/>
+        </Grid.RowDefinitions>
+
+        <ToolBar Margin="0" Grid.ColumnSpan="2"/>
+
+        <ToolBar Grid.ColumnSpan="1" Margin="0" Grid.Column="2">
+            <Button x:Name="bt_col_minus" Content="&lt;" Height="27.2" VerticalAlignment="Center" Width="40" BorderBrush="Black" Click="Bt_col_minus_Click"/>
+            <TextBox x:Name="txt_width" Text="256" Height="26" VerticalAlignment="Center" PreviewMouseWheel="Txt_width_PreviewMouseWheel" MinWidth="26" PreviewKeyDown="Txt_width_PreviewKeyDown"/>
+            <Button x:Name="bt_col_plus" Content="&gt;" Height="27.2" VerticalAlignment="Center" Width="40" BorderBrush="Black" Click="Bt_col_plus_Click"/>
+            <Separator Margin="5,2"/>
+
+            <Label Content="Bits per pixel:" Height="26" VerticalAlignment="Center"/>
+            <ComboBox x:Name="combo_bpp" HorizontalAlignment="Left" VerticalAlignment="Center" Width="55" SelectedIndex="0" Margin="0,8,0,7.2" PreviewMouseWheel="Combo_bpp_PreviewMouseWheel"/>
+
+            <ComboBox x:Name="combo_pixel" HorizontalAlignment="Left" VerticalAlignment="Center" Width="209" SelectedIndex="0" Margin="0,8,0,7.2" PreviewMouseWheel="Combo_pixel_PreviewMouseWheel"/>
+            <Separator Margin="5,2"/>
+
+            <ToggleButton Content="" Height="28" VerticalAlignment="Center" Width="28" HorizontalAlignment="Center" Checked="ToggleButton_Checked" Unchecked="ToggleButton_Unchecked">
+                <ToggleButton.Background>
+                    <ImageBrush ImageSource="Resources/back.bmp" Stretch="None"/>
+                </ToggleButton.Background>
+            </ToggleButton>
+
+        </ToolBar>
+
+
+        <GridSplitter HorizontalAlignment="Center" Width="5" ShowsPreview="True" ResizeBehavior="PreviousAndNext" Grid.Column="1" Grid.Row="1"/>
+        <ScrollViewer x:Name="scrollViewer" Margin="0" Grid.Column="2" Grid.Row="1" PanningMode="Both" HorizontalScrollBarVisibility="Auto" Background="Black" >
+            <Image x:Name="img" Margin="0" RenderOptions.BitmapScalingMode="NearestNeighbor" RenderOptions.EdgeMode="Aliased" MinHeight="200" Grid.Column="1" Width="16" HorizontalAlignment="Left" VerticalAlignment="Top" IsHitTestVisible="False"/>
+        </ScrollViewer>
     </Grid>
 </Window>

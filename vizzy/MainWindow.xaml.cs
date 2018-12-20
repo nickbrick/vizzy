@@ -28,19 +28,16 @@ namespace vizzy
 
 
 
-        public MainWindow()
+        public MainWindow(string file)
         {
             InitializeComponent();
             InitHexa();
             InitVizControls();
-            var INFILE = @"..\..\..\testfiles\welcome";
             Grid.SetColumn(viz.ScrollViewer, 2);
             Grid.SetRow(viz.ScrollViewer, 1);
             grid.Children.Add(viz.ScrollViewer);
-            viz.LoadData(INFILE);
-            viz.UpdateImg();
-            hexa.FileName = INFILE;
-            this.Title = INFILE;
+            LoadFile(file);
+            
 
             viz.UpdateImg();
             SubscribeEvents();
@@ -97,6 +94,7 @@ namespace vizzy
             combo_bpp.SelectionChanged += Combo_bpp_SelectionChanged;
 
         }
+
         private void InitHexa()
         {
             hexa.Height = Double.NaN;
@@ -110,9 +108,12 @@ namespace vizzy
             hexa.Foreground= new SolidColorBrush(Color.FromArgb(0xff, 0x92, 0xca, 0xf4));
             hexa.AllowAutoHightLighSelectionByte = false;
             hexa.AllowDrop = true;
-            hexa.Drop += Hexa_Drop;
+            hexa.ReadOnlyMode = true;
+            
             hexa.FileDroppingConfirmation = false;
+            hexa.Drop += Hexa_Drop;
             hexa.SelectionStartChanged += Hexa_SelectionStartChanged;
+            
             grid.Children.Add(hexa);
         }
 
@@ -123,6 +124,25 @@ namespace vizzy
             combo_pixel.SelectedValue = viz.PixelFormat;
         }
         
+        public void LoadFile(string file)
+        {
+            using (System.IO.FileStream fs = System.IO.File.Open(file, System.IO.FileMode.Open, System.IO.FileAccess.Read, System.IO.FileShare.ReadWrite))
+            {
+                int numBytesToRead = Convert.ToInt32(fs.Length);
+                byte[] hexData = new byte[(numBytesToRead)];
+                fs.Read(hexData, 0, numBytesToRead);
+                hexa.Stream = new System.IO.MemoryStream(hexData);
+            }
+            this.SetTitle(file);
+            viz.LoadData(file);
+            viz.UpdateImg();
+        }
+
+        public void SetTitle(string file)
+        {
+            this.Title = "Vizzy - " + file;
+        }
+
         private void Bt_col_minus_Click(object sender, RoutedEventArgs e)
         {
             if (viz.SetWidth(viz.Width / 2)) txt_width.Text = viz.Width.ToString();
@@ -155,10 +175,7 @@ namespace vizzy
         private void Hexa_Drop(object sender, DragEventArgs e)
         {
             string[] fileList = (string[])e.Data.GetData(DataFormats.FileDrop, false);
-            hexa.FileName = fileList[0];
-            this.Title = fileList[0];
-            viz.LoadData(fileList[0]);
-            viz.UpdateImg();
+            LoadFile(fileList[0]);
         }
 
         private void Hexa_SelectionStartChanged(object sender, EventArgs e)
@@ -199,12 +216,6 @@ namespace vizzy
                 }
             }
             txt_width.Text = w.ToString();
-        }
-
-        private void PrintCallerName()
-        {
-            StackTrace stackTrace = new StackTrace();
-            Console.WriteLine(stackTrace.GetFrame(1).GetMethod().Name);
         }
 
         private void Combo_bpp_PreviewMouseWheel(object sender, MouseWheelEventArgs e)

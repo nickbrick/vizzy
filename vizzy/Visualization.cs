@@ -101,6 +101,7 @@ namespace vizzy
                 Data = new byte[(numBytesToRead)];
                 fs.Read(Data, 0, numBytesToRead);
             }
+            
         }
 
         private BitmapSource MakeBitmap()

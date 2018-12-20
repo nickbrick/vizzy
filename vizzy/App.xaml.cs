@@ -13,5 +13,12 @@ namespace vizzy
     /// </summary>
     public partial class App : Application
     {
+        void AppStartup(object sender, StartupEventArgs e)
+        {
+            string file;
+            file = e.Args.Length > 0 ? e.Args[0] : System.IO.Path.GetFullPath(@"..\..\..\testfiles\welcome");
+            MainWindow mainWindow = new MainWindow(file);
+            mainWindow.Show();
+        }
     }
 }

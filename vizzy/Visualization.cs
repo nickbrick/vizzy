@@ -15,6 +15,7 @@ namespace vizzy
     public class Visualization
     {
         public int Width;
+        public int PaddedWidth;
         public int Height;
         public int Stride;
         public long VisOffset;
@@ -51,6 +52,7 @@ namespace vizzy
         public Visualization()
         {
             Width = 16;
+            PaddedWidth = 16;
             PixelFormat = PixelFormats.Gray8;
             Scale = 1;
             InitScrollViewer();
@@ -106,14 +108,18 @@ namespace vizzy
 
         private BitmapSource MakeBitmap()
         {
-            int stride = GetStride();
             byte[] subarray = new byte[Data.Length - VisOffset];
+            
             if (VisOffset < 0) VisOffset = 0;
             Array.ConstrainedCopy(Data, (int)VisOffset, subarray, 0, Data.Length - (int)VisOffset);
+            subarray = PaddedSubrray(subarray);
+            int stride = GetStride();
             int pixels = subarray.Length / PixelFormat.BitsPerPixel * 8;
+            PaddedWidth = stride * 8 / PixelFormat.BitsPerPixel;
+            Debug.WriteLine(PaddedWidth);
             try
             {
-                BitmapSource bitmapSource = BitmapSource.Create(Width, pixels / Width, 10, 10, PixelFormat,
+                BitmapSource bitmapSource = BitmapSource.Create(PaddedWidth, pixels / PaddedWidth, 10, 10, PixelFormat,
                     BitmapPalettes.WebPalette, subarray, stride);
                 return bitmapSource;
             }
@@ -123,6 +129,48 @@ namespace vizzy
             }
         }
 
+        private byte[] PaddedSubrray(byte[] input)
+        {
+            int w = Width;
+            int bpp = PixelFormat.BitsPerPixel;
+            int W = w * (bpp / 8); //width in pixels
+            int stride_b = GetStride() * 8;
+            int step_b = 4 * 8;
+            int p = step_b - ((w * bpp) % step_b);
+            if (p == step_b) p = 0;
+            int P = p / bpp;
+            int pixels = input.Length / PixelFormat.BitsPerPixel * 8;
+            int h = pixels / w;
+
+            byte[] padded = new byte[(w+P) * h * bpp / 8];
+
+
+
+
+
+
+            if (p != 0)
+            {
+                if (bpp >= 8) //padding in integer amount of bytes
+                {
+                    int padding_bytes = p / 8;
+                    if (padding_bytes < bpp / 8) padding_bytes = 0;
+                    byte[] pad = new byte[padding_bytes];
+                    for (int r = 0; r < h; r++)
+                    {
+                        byte[] row = new byte[W + padding_bytes];
+                        Array.Copy(input, r * W, row, 0, W);
+                        Array.Copy(row, 0, padded, r * (W + padding_bytes), (W + padding_bytes));
+                    }
+                    //Width = w + padding_bytes;
+                }
+                return padded;
+            }
+            return input;
+
+
+
+        }
         private int GetStride()
         {
             int RoundUp(int numToRound, int multiple)
@@ -176,7 +224,7 @@ namespace vizzy
         public void UpdateImg()
         {
             Img.Source = MakeBitmap();
-            Img.Width = Width * Scale;
+            Img.Width = PaddedWidth * Scale;
             if (ImageUpdated != null)
             {
                 ImageUpdated(this, e);

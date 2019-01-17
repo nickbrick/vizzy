@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
@@ -17,7 +18,7 @@ namespace vizzy
         public int Width;
         public int PaddedWidth;
         public int Height;
-        public int Stride;
+        public int stride;
         public long VisOffset;
         public double ScrollOffset;
         public double Scale;
@@ -113,7 +114,8 @@ namespace vizzy
             if (VisOffset < 0) VisOffset = 0;
             Array.ConstrainedCopy(Data, (int)VisOffset, subarray, 0, Data.Length - (int)VisOffset);
             subarray = PaddedSubrray(subarray);
-            int stride = GetStride();
+            int stride = GetStride(Width, PixelFormat.BitsPerPixel);
+
             int pixels = subarray.Length / PixelFormat.BitsPerPixel * 8;
             PaddedWidth = stride * 8 / PixelFormat.BitsPerPixel;
             Debug.WriteLine(PaddedWidth);
@@ -133,62 +135,85 @@ namespace vizzy
         {
             int w = Width;
             int bpp = PixelFormat.BitsPerPixel;
-            int W = w * (bpp / 8); //width in pixels
-            int stride_b = GetStride() * 8;
-            int step_b = 4 * 8;
-            int p = step_b - ((w * bpp) % step_b);
-            if (p == step_b) p = 0;
-            int P = p / bpp;
-            int pixels = input.Length / PixelFormat.BitsPerPixel * 8;
-            int h = pixels / w;
-
-            byte[] padded = new byte[(w+P) * h * bpp / 8];
+            int W = w * bpp / 8; //width in bytes
+            int stride = GetStride(w, bpp);
+            
 
 
 
 
 
-
-            if (p != 0)
+            if (W != stride)
             {
-                if (bpp >= 8) //padding in integer amount of bytes
+                if (bpp == 8 || bpp == 16) //padding in integer amount of bytes
                 {
-                    int padding_bytes = p / 8;
-                    if (padding_bytes < bpp / 8) padding_bytes = 0;
-                    byte[] pad = new byte[padding_bytes];
+                    int pixels = input.Length / bpp * 8;
+                    int h = pixels / w;
+                    byte[] padded = new byte[stride * h];
+                    int row_bytes = 0;
+
+                    row_bytes = stride;
                     for (int r = 0; r < h; r++)
                     {
-                        byte[] row = new byte[W + padding_bytes];
+                        byte[] row = new byte[row_bytes];
                         Array.Copy(input, r * W, row, 0, W);
-                        Array.Copy(row, 0, padded, r * (W + padding_bytes), (W + padding_bytes));
+                        Array.Copy(row, 0, padded, r * row_bytes, row_bytes);
                     }
-                    //Width = w + padding_bytes;
+                    return padded;
                 }
-                return padded;
+                else if (bpp < 8) // bit padding
+                {
+                    BitArray input_bits = new BitArray(input);
+                    int pixels = input.Length / bpp;
+                    int h = pixels / w;
+                    BitArray padded_bits = new BitArray(stride * 8 * h);
+                    W = w * bpp;
+                    int stride_bits = stride * 8;
+                    BitArray row = new BitArray(stride_bits);
+                    byte[] padded = new byte[padded_bits.Length / 8];
+
+                    for (int r = 0; r < h; r++)
+                    {
+                        for (int i = 0; i < stride_bits; i++)
+                        {
+                            if (i < W)
+                            {
+                                int I_in = r * W + i;
+                                int I_out = r * stride_bits + i;
+                                row[i] = input_bits[I_in];
+                                //padded_bits[I_out] = input_bits[I_in];
+                            }
+
+                        }
+                        BitArray wor = new BitArray(stride_bits);
+                        for (int B = 0; B < stride_bits / 8; B++)
+                        {
+                            for (int u = 0; u < 8; u++)
+                            {
+                                wor[8 * B + u] = row[8 * B + 7 - u];
+                            }
+
+                        }
+
+                        byte[] row_bytes = new byte[stride_bits / 8];
+                        wor.CopyTo(row_bytes, 0);
+                            //row.CopyTo(row_bytes, 0);
+                        row_bytes.CopyTo(padded, r * stride);
+                    }
+                    //byte[] padded = new byte[padded_bits.Length / 8];
+                    //padded_bits.CopyTo(padded, 0);
+                    return padded;
+                }
             }
             return input;
 
 
 
         }
-        private int GetStride()
+        private int GetStride(int w, int bpp)
         {
-            int RoundUp(int numToRound, int multiple)
-            {
-                if (multiple == 0)
-                {
-                    return numToRound;
-                }
-                int remainder = numToRound % multiple;
-                if (remainder == 0)
-                {
-                    return numToRound;
-                }
-                return numToRound + multiple - remainder;
-            }
-            int value = Width * PixelFormat.BitsPerPixel;
-            value = RoundUp(value, 32) / 8;
-            return value;
+            if (bpp == 24) return w * 3;
+            else return ((((w * bpp) - 1) / 32) + 1) * 4;
         }
 
         public bool SetWidth(int w)

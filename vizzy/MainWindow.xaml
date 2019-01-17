@@ -7,6 +7,7 @@
         xmlns:control="clr-namespace:WpfHexaEditor;assembly=WPFHexaEditor"
         mc:Ignorable="d"
         Title="MainWindow" Height="960" Width="1714.556">
+
     <Grid x:Name="grid">
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="851*"/>

@@ -123,6 +123,7 @@ namespace vizzy
             {
                 BitmapSource bitmapSource = BitmapSource.Create(PaddedWidth, pixels / PaddedWidth, 10, 10, PixelFormat,
                     BitmapPalettes.WebPalette, subarray, stride);
+                Height = pixels / Width;
                 return bitmapSource;
             }
             catch (Exception)
@@ -250,10 +251,16 @@ namespace vizzy
         {
             Img.Source = MakeBitmap();
             Img.Width = PaddedWidth * Scale;
+            ClipImg();
             if (ImageUpdated != null)
             {
                 ImageUpdated(this, e);
             }
+        }
+
+        public void ClipImg()
+        {
+            Img.Clip = new RectangleGeometry(new Rect(0, 0, Width * Scale, Height * Scale));
         }
 
         public void SwitchBackground(int i)
@@ -277,17 +284,17 @@ namespace vizzy
                 if (e.Delta > 0)
                 {
                     Scale *= 1.2;
-                    Img.Width = Width * Scale;
+                    Img.Width = PaddedWidth * Scale;
                     Img.Height *= Scale;
                 }
                 else if (e.Delta < 0)
                 {
                     Scale /= 1.2;
                     if (Scale < 1) Scale = 1;
-                    Img.Width = Width * Scale;
+                    Img.Width = PaddedWidth * Scale;
                     Img.Height /= Scale;
                 }
-
+                ClipImg();
             }
             else if (Keyboard.Modifiers == ModifierKeys.Shift)
             {

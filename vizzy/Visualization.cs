@@ -15,10 +15,9 @@ namespace vizzy
 {
     public class Visualization
     {
-        public int Width;
-        public int PaddedWidth;
+        public int Cols;
+        private int Width;
         public int Height;
-        public int stride;
         public long VisOffset;
         public double ScrollOffset;
         public double Scale;
@@ -52,8 +51,8 @@ namespace vizzy
 
         public Visualization()
         {
+            Cols = 15;
             Width = 16;
-            PaddedWidth = 16;
             PixelFormat = PixelFormats.Gray8;
             Scale = 1;
             InitScrollViewer();
@@ -109,21 +108,20 @@ namespace vizzy
 
         private BitmapSource MakeBitmap()
         {
+
             byte[] subarray = new byte[Data.Length - VisOffset];
             
             if (VisOffset < 0) VisOffset = 0;
             Array.ConstrainedCopy(Data, (int)VisOffset, subarray, 0, Data.Length - (int)VisOffset);
             subarray = PaddedSubrray(subarray);
-            int stride = GetStride(Width, PixelFormat.BitsPerPixel);
+            int stride = GetStride(Cols, PixelFormat.BitsPerPixel);
 
-            int pixels = subarray.Length / PixelFormat.BitsPerPixel * 8;
-            PaddedWidth = stride * 8 / PixelFormat.BitsPerPixel;
-            Debug.WriteLine(PaddedWidth);
+            //Width = stride * 8 / PixelFormat.BitsPerPixel;
             try
             {
-                BitmapSource bitmapSource = BitmapSource.Create(PaddedWidth, pixels / PaddedWidth, 10, 10, PixelFormat,
+                BitmapSource bitmapSource = BitmapSource.Create(Width, Height, 10, 10, PixelFormat,
                     BitmapPalettes.WebPalette, subarray, stride);
-                Height = pixels / Width;
+                //Height = pixels / Width + 1;
                 return bitmapSource;
             }
             catch (Exception)
@@ -134,60 +132,76 @@ namespace vizzy
 
         private byte[] PaddedSubrray(byte[] input)
         {
-            int w = Width;
+            byte[] inputpadded = input;
+
             int bpp = PixelFormat.BitsPerPixel;
-            int W = w * bpp / 8; //width in bytes
-            int stride = GetStride(w, bpp);
-            
+            int Binput = input.Length;
+            int pxinput = Binput * 8 / bpp;
+            int c = Cols;
+            int h = (int)Math.Ceiling((float)pxinput / (float)c);
+            int bc = c * bpp;
+            int Bc = bc / 8;
+            int stride = GetStride(c, bpp);
+            int Bpad = stride - Bc;
+            int bpad = Bpad * 8;
+            int pxpad = bpad / bpp;
+            int pxstride = c + pxpad;
+            int pxoutput = h * pxstride;
+            int Boutput = pxoutput * bpp / 8;
+            int inputpad = (stride - (Binput % Bc)) % stride;
+            int Binputpadded = Binput + inputpad;
 
-
-
-
-
-            if (W != stride)
+            Width = pxstride;
+            Height = h;
+            if (true)
             {
-                if (bpp == 8 || bpp == 16) //padding in integer amount of bytes
+                if (bpp >= 8) //padding in integer amount of bytes
                 {
-                    int pixels = input.Length / bpp * 8;
-                    int h = pixels / w;
-                    byte[] padded = new byte[stride * h];
-                    int row_bytes = 0;
+                    inputpadded = new byte[Binputpadded];
+                    Array.Copy(input, inputpadded, Binput); //copy original input into a larger array that divides evenly into h
+                    Height = h;
+                    byte[] output = new byte[Boutput];
 
-                    row_bytes = stride;
                     for (int r = 0; r < h; r++)
                     {
-                        byte[] row = new byte[row_bytes];
-                        Array.Copy(input, r * W, row, 0, W);
-                        Array.Copy(row, 0, padded, r * row_bytes, row_bytes);
+                        byte[] row = new byte[stride];
+                        Array.Copy(inputpadded, r * Bc, row, 0, Bc);
+                        Array.Copy(row, 0, output, r * stride, stride);
                     }
-                    return padded;
+
+                    Debug.WriteLine(String.Format("Binput: {0} \n pxoutput: {1}\n h: {2}\nstride: {3}\n", Binput, pxoutput, h, stride));
+                    return output;
                 }
                 else if (bpp < 8) // bit padding
                 {
-                    BitArray input_bits = new BitArray(input);
-                    int pixels = input.Length / bpp;
-                    int h = pixels / w;
-                    BitArray padded_bits = new BitArray(stride * 8 * h);
-                    W = w * bpp;
-                    int stride_bits = stride * 8;
-                    BitArray row = new BitArray(stride_bits);
-                    byte[] padded = new byte[padded_bits.Length / 8];
+                    BitArray barrinputpadded = new BitArray(bc * h);
+
+                    BitArray barrinput = new BitArray(input);
+                    for (int i = 0; i < barrinput.Length; i++)
+                    {
+                        barrinputpadded[i] = barrinput[i];
+                    }
+                    BitArray barroutput = new BitArray(stride * 8 * h);
+                    int bstride = stride * 8;
+                    BitArray row = new BitArray(bstride);
+                    byte[] output = new byte[barroutput.Length / 8];
 
                     for (int r = 0; r < h; r++)
                     {
-                        for (int i = 0; i < stride_bits; i++)
+                        for (int i = 0; i < bstride; i++)
                         {
-                            if (i < W)
+                            if (i < bc)
                             {
-                                int I_in = r * W + i;
-                                int I_out = r * stride_bits + i;
-                                row[i] = input_bits[I_in];
+                                int I_in = r * bc + i;
+                                int I_out = r * bstride + i;
+                                if (I_in < barrinputpadded.Length)
+                                    row[i] = barrinputpadded[I_in];
                                 //padded_bits[I_out] = input_bits[I_in];
                             }
 
                         }
-                        BitArray wor = new BitArray(stride_bits);
-                        for (int B = 0; B < stride_bits / 8; B++)
+                        BitArray wor = new BitArray(bstride); //reverse bit endiannes for each byte
+                        for (int B = 0; B < bstride / 8; B++)
                         {
                             for (int u = 0; u < 8; u++)
                             {
@@ -196,14 +210,14 @@ namespace vizzy
 
                         }
 
-                        byte[] row_bytes = new byte[stride_bits / 8];
+                        byte[] row_bytes = new byte[bstride / 8];
                         wor.CopyTo(row_bytes, 0);
-                            //row.CopyTo(row_bytes, 0);
-                        row_bytes.CopyTo(padded, r * stride);
+                        //row.CopyTo(row_bytes, 0);
+                        row_bytes.CopyTo(output, r * stride);
                     }
                     //byte[] padded = new byte[padded_bits.Length / 8];
                     //padded_bits.CopyTo(padded, 0);
-                    return padded;
+                    return output;
                 }
             }
             return input;
@@ -214,22 +228,23 @@ namespace vizzy
         private int GetStride(int w, int bpp)
         {
             if (bpp == 24) return w * 3;
+            else if (bpp == 48) return w * 6;
             else return ((((w * bpp) - 1) / 32) + 1) * 4;
         }
 
-        public bool SetWidth(int w)
+        public bool SetCols(int w)
         {
-            var oldWidth = Width;
+            var oldCols = Cols;
             try
             {
-                Width = w;
+                Cols = w;
                 UpdateImg();
                 return true;
             }
             catch (Exception x)
             {
-                Width = oldWidth;
-                Debug.WriteLine(x.ToString() + " @ SetWidth(" + w.ToString() + ")");
+                Cols = oldCols;
+                Debug.WriteLine(x.ToString() + " @ SetCols(" + w.ToString() + ")");
                 return false;
             }
         }
@@ -250,7 +265,7 @@ namespace vizzy
         public void UpdateImg()
         {
             Img.Source = MakeBitmap();
-            Img.Width = PaddedWidth * Scale;
+            Img.Width = Width * Scale;
             ClipImg();
             if (ImageUpdated != null)
             {
@@ -260,7 +275,7 @@ namespace vizzy
 
         public void ClipImg()
         {
-            Img.Clip = new RectangleGeometry(new Rect(0, 0, Width * Scale, Height * Scale));
+            Img.Clip = new RectangleGeometry(new Rect(0, 0, Cols * Scale, Height * Scale));
         }
 
         public void SwitchBackground(int i)
@@ -284,17 +299,21 @@ namespace vizzy
                 if (e.Delta > 0)
                 {
                     Scale *= 1.2;
-                    Img.Width = PaddedWidth * Scale;
+                    Img.Width = Width * Scale;
                     Img.Height *= Scale;
                 }
                 else if (e.Delta < 0)
                 {
                     Scale /= 1.2;
                     if (Scale < 1) Scale = 1;
-                    Img.Width = PaddedWidth * Scale;
+                    Img.Width = Width * Scale;
                     Img.Height /= Scale;
                 }
                 ClipImg();
+                if (ImageUpdated != null)
+                {
+                    ImageUpdated(this, e);
+                }
             }
             else if (Keyboard.Modifiers == ModifierKeys.Shift)
             {

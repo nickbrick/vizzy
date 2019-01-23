@@ -70,7 +70,7 @@ namespace vizzy
             Cols = 16;
             Width = 16;
             PixelFormat = PixelFormats.Gray8;
-            Scale = 1;
+            Scale = 18.4884258895036416;
             InitScrollViewer();
             InitImg();
             
@@ -147,13 +147,10 @@ namespace vizzy
             Array.ConstrainedCopy(Data, (int)VisOffset, subarray, 0, Data.Length - (int)VisOffset);
             subarray = PaddedSubrray(subarray);
             int stride = GetStride(Cols, PixelFormat.BitsPerPixel);
-
-            //Width = stride * 8 / PixelFormat.BitsPerPixel;
             try
             {
                 BitmapSource bitmapSource = BitmapSource.Create(Width, Height, 10, 10, PixelFormat,
                     BitmapPalettes.WebPalette, subarray, stride);
-                //Height = pixels / Width + 1;
                 return bitmapSource;
             }
             catch (Exception)
@@ -228,7 +225,6 @@ namespace vizzy
                                 int I_out = r * bstride + i;
                                 if (I_in < barrinputpadded.Length)
                                     row[i] = barrinputpadded[I_in];
-                                //padded_bits[I_out] = input_bits[I_in];
                             }
 
                         }
@@ -239,16 +235,12 @@ namespace vizzy
                             {
                                 wor[8 * B + u] = row[8 * B + 7 - u];
                             }
-
                         }
 
                         byte[] row_bytes = new byte[bstride / 8];
                         wor.CopyTo(row_bytes, 0);
-                        //row.CopyTo(row_bytes, 0);
                         row_bytes.CopyTo(output, r * stride);
                     }
-                    //byte[] padded = new byte[padded_bits.Length / 8];
-                    //padded_bits.CopyTo(padded, 0);
                     return output;
                 }
             }

@@ -40,7 +40,9 @@ namespace vizzy
             
 
             viz.UpdateImg();
+            UpdateVizControls();
             SubscribeEvents();
+
         }
 
         private void InitVizControls()
@@ -93,7 +95,6 @@ namespace vizzy
             viz.ImageUpdated += Viz_ImageUpdated;
             viz.ImageClicked += Viz_ImageClicked;
             combo_bpp.SelectionChanged += Combo_bpp_SelectionChanged;
-
         }
 
         private void Viz_ImageClicked(object sender, Visualization.ImageClickedArgs e)
@@ -105,8 +106,6 @@ namespace vizzy
                 hexa.SelectionStartChanged -= Hexa_SelectionStartChanged;
                 hexa.SetPosition(offset, 1);
                 hexa.SelectionStartChanged += Hexa_SelectionStartChanged;
-
-
             }
         }
 
@@ -162,13 +161,11 @@ namespace vizzy
         private void Bt_col_minus_Click(object sender, RoutedEventArgs e)
         {
             if (viz.SetCols(viz.Cols / 2)) txt_width.Text = viz.Cols.ToString();
-
         }
 
         private void Bt_col_plus_Click(object sender, RoutedEventArgs e)
         {
             if (viz.SetCols(viz.Cols * 2)) txt_width.Text = viz.Cols.ToString();
-
         }
 
         private void Combo_pixel_SelectionChanged(object sender, SelectionChangedEventArgs e)

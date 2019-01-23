@@ -38,6 +38,9 @@
                     <ImageBrush ImageSource="Resources/back.bmp" Stretch="None"/>
                 </ToggleButton.Background>
             </ToggleButton>
+            <Separator Margin="5,2"/>
+            <Label x:Name="lbl_zoom" Content="1.0x" Height="26" VerticalAlignment="Center"/>
+
 
         </ToolBar>
 

@@ -84,7 +84,7 @@ namespace vizzy
             combo_pixel.ItemsSource = pixelsublist;
             combo_pixel.SelectedIndex = 0;
             combo_pixel.SelectedItem = viz.PixelFormat;
-            txt_width.Text = viz.Width.ToString();
+            txt_width.Text = viz.Cols.ToString();
         }
 
         private void SubscribeEvents()
@@ -119,9 +119,10 @@ namespace vizzy
 
         private void UpdateVizControls()
         {
-            txt_width.Text = viz.Width.ToString();
+            txt_width.Text = viz.Cols.ToString();
             combo_bpp.SelectedValue = viz.PixelFormat.BitsPerPixel;
             combo_pixel.SelectedValue = viz.PixelFormat;
+            lbl_zoom.Content = viz.Scale.ToString("0.0") + " x";
         }
         
         public void LoadFile(string file)
@@ -145,13 +146,13 @@ namespace vizzy
 
         private void Bt_col_minus_Click(object sender, RoutedEventArgs e)
         {
-            if (viz.SetWidth(viz.Width / 2)) txt_width.Text = viz.Width.ToString();
+            if (viz.SetCols(viz.Cols / 2)) txt_width.Text = viz.Cols.ToString();
 
         }
 
         private void Bt_col_plus_Click(object sender, RoutedEventArgs e)
         {
-            if (viz.SetWidth(viz.Width * 2)) txt_width.Text = viz.Width.ToString();
+            if (viz.SetCols(viz.Cols * 2)) txt_width.Text = viz.Cols.ToString();
 
         }
 
@@ -169,7 +170,7 @@ namespace vizzy
             combo_pixel.ItemsSource = pixelsublist;
             combo_pixel.SelectedIndex = 0;
             viz.SetPixel((PixelFormat)combo_pixel.SelectedItem); 
-            if (viz.Width * (int)combo_bpp.SelectedValue < 32) viz.SetWidth((int)Math.Ceiling(32.0 / (int)combo_bpp.SelectedValue));
+            if (viz.Cols * (int)combo_bpp.SelectedValue < 32) viz.SetCols((int)Math.Ceiling(32.0 / (int)combo_bpp.SelectedValue));
         }
 
         private void Hexa_Drop(object sender, DragEventArgs e)
@@ -199,22 +200,11 @@ namespace vizzy
         {
             int step = (e.Delta > 0 ? 1 : -1);
 
-            var firstw = viz.Width;
-            var w = viz.Width + step;
-            while (!viz.SetWidth(w))
-            {
-                w += step;
-                if (w == 0)
-                {
-                    w = firstw;
-                    break;
-                }
-                if (w > viz.Data.Length / viz.PixelFormat.BitsPerPixel * 8)
-                {
-                    w = firstw;
-                    break;
-                }
-            }
+            var firstw = viz.Cols;
+            var w = viz.Cols + step;
+            if ((w == 0) || (w > viz.Data.Length / viz.PixelFormat.BitsPerPixel * 8)) w = firstw;
+            viz.SetCols(w);
+
             txt_width.Text = w.ToString();
         }
 
@@ -251,7 +241,7 @@ namespace vizzy
                 int w;
                 if (int.TryParse(txt_width.Text,out w))
                 {
-                    viz.SetWidth(w);
+                    viz.SetCols(w);
                     UpdateVizControls();
                 }
 

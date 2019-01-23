@@ -27,12 +27,28 @@ namespace vizzy
         public ScrollViewer ScrollViewer;
 
         public event EventHandler ImageUpdated;
+        public event EventHandler<ImageClickedArgs> ImageClicked;
         public EventArgs e = null;
         public delegate void EventHandler(Visualization v, EventArgs e);
+        public delegate void EventHandler<ImageClickedArgs>(Visualization v, ImageClickedArgs e);
+        public class ImageClickedArgs : EventArgs
+        {
+            public long ClickedOffset;
+            public ImageClickedArgs(long o)
+            {
+                ClickedOffset = o;
+            }
+        }
+
         public void OnImageUpdated()
         {
             EventHandler handler = ImageUpdated;
             if (null != handler) handler(this, EventArgs.Empty);
+        }
+        public void OnImageClicked(ImageClickedArgs e)
+        {
+            EventHandler<ImageClickedArgs> handler = ImageClicked;
+            if (null != handler) handler(this, e);
         }
 
         private static ImageBrush MakeAlphaBackground()
@@ -51,12 +67,13 @@ namespace vizzy
 
         public Visualization()
         {
-            Cols = 15;
+            Cols = 16;
             Width = 16;
             PixelFormat = PixelFormats.Gray8;
             Scale = 1;
             InitScrollViewer();
             InitImg();
+            
         }
 
         public Visualization(string path) : this()
@@ -91,8 +108,23 @@ namespace vizzy
             Img.MinHeight = 200;
             Img.HorizontalAlignment = System.Windows.HorizontalAlignment.Left;
             Img.VerticalAlignment = System.Windows.VerticalAlignment.Top;
-            Img.IsHitTestVisible = false;
+            Img.IsHitTestVisible = true;
             ScrollViewer.Content = Img;
+            Img.PreviewMouseLeftButtonUp += Img_PreviewMouseLeftButtonUp;
+        }
+
+        private void Img_PreviewMouseLeftButtonUp(object sender, MouseButtonEventArgs e)
+        {
+            Point pos = e.GetPosition(Img);
+            int x = (int)Math.Floor(pos.X / Scale);
+            int y = (int)Math.Floor(pos.Y / Scale);
+            long pixel_ord = y * Cols + x;
+            long offset = VisOffset + pixel_ord * PixelFormat.BitsPerPixel / 8;
+            if (ImageClicked != null)
+            {
+                ImageClicked(this, new ImageClickedArgs(offset));
+            }
+            Debug.WriteLine(offset);
         }
 
         public void LoadData(string path)
@@ -136,7 +168,7 @@ namespace vizzy
 
             int bpp = PixelFormat.BitsPerPixel;
             int Binput = input.Length;
-            int pxinput = Binput * 8 / bpp;
+            int pxinput = Math.Max(Binput * 8 / bpp, 1);
             int c = Cols;
             int h = (int)Math.Ceiling((float)pxinput / (float)c);
             int bc = c * bpp;

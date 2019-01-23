@@ -91,8 +91,23 @@ namespace vizzy
         {
             combo_pixel.SelectionChanged += Combo_pixel_SelectionChanged;
             viz.ImageUpdated += Viz_ImageUpdated;
+            viz.ImageClicked += Viz_ImageClicked;
             combo_bpp.SelectionChanged += Combo_bpp_SelectionChanged;
 
+        }
+
+        private void Viz_ImageClicked(object sender, Visualization.ImageClickedArgs e)
+        {
+            Debug.WriteLine("viz image clicked: " + e.ClickedOffset);
+            long offset = e.ClickedOffset;
+            if (offset >= hexa.Lenght) offset = hexa.Lenght - 1;
+            {
+                hexa.SelectionStartChanged -= Hexa_SelectionStartChanged;
+                hexa.SetPosition(offset, 1);
+                hexa.SelectionStartChanged += Hexa_SelectionStartChanged;
+
+
+            }
         }
 
         private void InitHexa()

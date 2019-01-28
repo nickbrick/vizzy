@@ -102,9 +102,9 @@ namespace vizzy
             Img.Width = Double.NaN;
             Img.Height= Double.NaN;
 
-            Img.SetValue(RenderOptions.BitmapScalingModeProperty, BitmapScalingMode.NearestNeighbor);
+            //Img.SetValue(RenderOptions.BitmapScalingModeProperty, BitmapScalingMode.NearestNeighbor);
             RenderOptions.SetBitmapScalingMode(Img, BitmapScalingMode.NearestNeighbor);
-            RenderOptions.SetEdgeMode(Img, EdgeMode.Aliased);
+            //RenderOptions.SetEdgeMode(Img, EdgeMode.Aliased);
             Img.MinHeight = 200;
             Img.HorizontalAlignment = System.Windows.HorizontalAlignment.Left;
             Img.VerticalAlignment = System.Windows.VerticalAlignment.Top;
@@ -140,11 +140,12 @@ namespace vizzy
 
         private BitmapSource MakeBitmap()
         {
-
-            byte[] subarray = new byte[Data.Length - VisOffset];
-            
             if (VisOffset < 0) VisOffset = 0;
-            Array.ConstrainedCopy(Data, (int)VisOffset, subarray, 0, Data.Length - (int)VisOffset);
+            int subbaray_length = (int)(Data.Length - VisOffset);
+            //int subbaray_length = (int)Math.Min((long)Math.Pow(512, 2), Data.Length - VisOffset) ;
+            byte[] subarray = new byte[subbaray_length];
+            
+            Array.ConstrainedCopy(Data, (int)VisOffset, subarray, 0, subbaray_length);
             subarray = PaddedSubrray(subarray);
             int stride = GetStride(Cols, PixelFormat.BitsPerPixel);
             try
@@ -171,8 +172,8 @@ namespace vizzy
             int bc = c * bpp;
             int Bc = bc / 8;
             int stride = GetStride(c, bpp);
-            int Bpad = stride - Bc;
-            int bpad = Bpad * 8;
+            int bstride = stride * 8;
+            int bpad = bstride - bc;
             int pxpad = bpad / bpp;
             int pxstride = c + pxpad;
             int pxoutput = h * pxstride;
@@ -211,7 +212,7 @@ namespace vizzy
                         barrinputpadded[i] = barrinput[i];
                     }
                     BitArray barroutput = new BitArray(stride * 8 * h);
-                    int bstride = stride * 8;
+                    bstride = stride * 8;
                     BitArray row = new BitArray(bstride);
                     byte[] output = new byte[barroutput.Length / 8];
 

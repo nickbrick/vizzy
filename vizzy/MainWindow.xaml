@@ -6,7 +6,7 @@
         xmlns:local="clr-namespace:vizzy"
         xmlns:control="clr-namespace:WpfHexaEditor;assembly=WPFHexaEditor"
         mc:Ignorable="d"
-        Title="MainWindow" Height="960" Width="1714.556">
+        Title="MainWindow" Height="960" Width="1714.556" Loaded="Window_Loaded">
 
     <Grid x:Name="grid">
         <Grid.ColumnDefinitions>

@@ -223,22 +223,29 @@ namespace vizzy
 
         private void Combo_bpp_PreviewMouseWheel(object sender, MouseWheelEventArgs e)
         {
-            int step = (e.Delta > 0 ? -1 : 1);
-            int limit = (e.Delta > 0 ? 0 : combo_bpp.Items.Count - 1);
-            Debug.WriteLine("step " + step);
+            if (!combo_bpp.IsFocused)
+            {
+                int step = (e.Delta > 0 ? -1 : 1);
+                int limit = (e.Delta > 0 ? 0 : combo_bpp.Items.Count - 1);
+                Debug.WriteLine("step " + step);
 
-            if (combo_bpp.SelectedIndex != limit) { 
-                combo_bpp.SelectedIndex += step;
+                if (combo_bpp.SelectedIndex != limit)
+                {
+                    combo_bpp.SelectedIndex += step;
+                }
             }
         }
 
         private void Combo_pixel_PreviewMouseWheel(object sender, MouseWheelEventArgs e)
         {
-            int step = (e.Delta > 0 ? -1 : 1);
-            int limit = (e.Delta > 0 ? 0 : combo_pixel.Items.Count - 1);
-            if (combo_pixel.SelectedIndex != limit)
+            if (!combo_pixel.IsFocused)
             {
-                combo_pixel.SelectedIndex += step;
+                int step = (e.Delta > 0 ? -1 : 1);
+                int limit = (e.Delta > 0 ? 0 : combo_pixel.Items.Count - 1);
+                if (combo_pixel.SelectedIndex != limit)
+                {
+                    combo_pixel.SelectedIndex += step;
+                }
             }
         }
 

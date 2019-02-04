@@ -22,6 +22,7 @@ namespace vizzy
         public double ScrollOffset;
         public double Scale;
         public byte[] Data;
+        private BitArray BitData;
         public PixelFormat PixelFormat;
         public Image Img;
         public ScrollViewer ScrollViewer;
@@ -74,12 +75,16 @@ namespace vizzy
             InitScrollViewer();
             InitImg();
             
+
         }
+
+
 
         public Visualization(string path) : this()
         {
             LoadData(path);
             UpdateImg();
+
         }
 
 
@@ -135,9 +140,28 @@ namespace vizzy
                 Data = new byte[(numBytesToRead)];
                 fs.Read(Data, 0, numBytesToRead);
             }
-            
-        }
+            BakeBitData();
 
+        }
+        private void BakeBitData()
+        {
+            Debug.WriteLine("baking bit data..");
+            BitData = new BitArray(Data);
+            var stack = new Stack<bool>(8);
+            for (int b = 0; b < BitData.Length; b++)
+            {
+                stack.Push(BitData[b]);
+                if (b % 8 == 7)
+                {
+                    for (int i = b - 7; i < b + 1; i++)
+                    {
+                        BitData[i] = stack.Pop();
+                    }
+                }
+            }
+
+
+        }
         private BitmapSource MakeBitmap()
         {
             if (VisOffset < 0) VisOffset = 0;
@@ -205,11 +229,11 @@ namespace vizzy
                 else if (bpp < 8) // bit padding
                 {
                     BitArray barrinputpadded = new BitArray(bc * h);
-
-                    BitArray barrinput = new BitArray(input);
-                    for (int i = 0; i < barrinput.Length; i++)
+                    int datalength = (int)(Data.Length - VisOffset )* 8;
+                    //BitArray barrinput = new BitArray(input);
+                    for (int i = 0; i < datalength; i++)
                     {
-                        barrinputpadded[i] = barrinput[i];
+                        barrinputpadded[i] = BitData[(int)VisOffset + i];
                     }
                     BitArray barroutput = new BitArray(stride * 8 * h);
                     bstride = stride * 8;
@@ -229,17 +253,10 @@ namespace vizzy
                             }
 
                         }
-                        BitArray wor = new BitArray(bstride); //reverse bit endiannes for each byte
-                        for (int B = 0; B < bstride / 8; B++)
-                        {
-                            for (int u = 0; u < 8; u++)
-                            {
-                                wor[8 * B + u] = row[8 * B + 7 - u];
-                            }
-                        }
+                        
 
                         byte[] row_bytes = new byte[bstride / 8];
-                        wor.CopyTo(row_bytes, 0);
+                        row.CopyTo(row_bytes, 0);
                         row_bytes.CopyTo(output, r * stride);
                     }
                     return output;

@@ -23,6 +23,7 @@ namespace vizzy
         public double Scale;
         public byte[] Data;
         private BitArray BitData;
+        public bool UseMSB0;
         public PixelFormat PixelFormat;
         public Image Img;
         public ScrollViewer ScrollViewer;
@@ -71,6 +72,7 @@ namespace vizzy
             Cols = 16;
             Width = 16;
             PixelFormat = PixelFormats.Gray8;
+            UseMSB0 = false;
             Scale = 18.4884258895036416;
             InitScrollViewer();
             InitImg();
@@ -237,7 +239,16 @@ namespace vizzy
                             if (i < bc)
                             {
                                 int I_in = r * bc + i;
-                                int I_out = (i / 8) * 8 + 7 - i % 8;
+                                int I_out;
+                                if (!UseMSB0)
+                                {
+                                    I_out = (i / 8) * 8 + 7 - i % 8;
+                                }
+                                else
+                                {
+                                    I_out = i;
+
+                                }
                                 if (I_in < barrinputpadded.Length)
                                     row[I_out] = barrinputpadded[I_in];
                             }

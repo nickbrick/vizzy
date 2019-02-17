@@ -184,8 +184,21 @@ namespace vizzy
             combo_pixel.SelectedIndex = 0;
             viz.SetPixel((PixelFormat)combo_pixel.SelectedItem); 
             if (viz.Cols * (int)combo_bpp.SelectedValue < 32) viz.SetCols((int)Math.Ceiling(32.0 / (int)combo_bpp.SelectedValue));
-            
+            if (viz.PixelFormat.BitsPerPixel < 8)
+            {
+                chk_endian.Visibility = Visibility.Visible;
+            }
+            else
+            {
+                chk_endian.Visibility = Visibility.Collapsed;
+                //if ((bool)chk_endian.IsChecked)
+                //{
+                //    chk_endian.IsChecked = false;
+                //    viz.UpdateImg();
+                //}
+            }
         }
+
 
         private void Hexa_Drop(object sender, DragEventArgs e)
         {
@@ -277,6 +290,19 @@ namespace vizzy
                 HwndTarget hwndTarget = hwndSource.CompositionTarget;
                 hwndTarget.RenderMode = RenderMode.SoftwareOnly;
             }
+        }
+
+        private void Chk_endian_Checked(object sender, RoutedEventArgs e)
+        {
+            viz.UseMSB0 = true;
+            viz.UpdateImg();
+        }
+
+        private void Chk_endian_Unchecked(object sender, RoutedEventArgs e)
+        {
+            viz.UseMSB0 = false;
+            viz.UpdateImg();
+
         }
     }
 }

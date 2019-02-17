@@ -31,6 +31,8 @@
             <ComboBox x:Name="combo_bpp" HorizontalAlignment="Left" VerticalAlignment="Center" Width="55" SelectedIndex="0" Margin="0,8,0,7.2" PreviewMouseWheel="Combo_bpp_PreviewMouseWheel"/>
 
             <ComboBox x:Name="combo_pixel" HorizontalAlignment="Left" VerticalAlignment="Center" Width="209" SelectedIndex="0" Margin="0,8,0,7.2" PreviewMouseWheel="Combo_pixel_PreviewMouseWheel"/>
+
+            <CheckBox x:Name="chk_endian" HorizontalAlignment="Left" VerticalAlignment="Center" Content="MSB0" Visibility="Collapsed" Checked="Chk_endian_Checked" Unchecked="Chk_endian_Unchecked" />
             <Separator Margin="5,2"/>
 
             <ToggleButton Content="" Height="28" VerticalAlignment="Center" Width="28" HorizontalAlignment="Center" Checked="ToggleButton_Checked" Unchecked="ToggleButton_Unchecked">

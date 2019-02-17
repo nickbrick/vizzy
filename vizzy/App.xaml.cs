@@ -16,7 +16,8 @@ namespace vizzy
         void AppStartup(object sender, StartupEventArgs e)
         {
             string file;
-            file = e.Args.Length > 0 ? e.Args[0] : System.IO.Path.GetFullPath(@"..\..\..\testfiles\welcome");
+            //file = e.Args.Length > 0 ? e.Args[0] : System.IO.Path.GetFullPath(@"..\..\..\testfiles\welcome");
+            file = e.Args.Length > 0 ? e.Args[0] : System.IO.Path.GetFullPath(@"Resources\welcome");
             MainWindow mainWindow = new MainWindow(file);
             mainWindow.Show();
         }

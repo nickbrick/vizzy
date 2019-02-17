@@ -226,7 +226,7 @@ namespace vizzy
         private void Txt_width_PreviewMouseWheel(object sender, MouseWheelEventArgs e)
         {
             int step = (e.Delta > 0 ? 1 : -1);
-
+            if (viz.UseMSB0) step *= 8 / viz.PixelFormat.BitsPerPixel;
             var firstw = viz.Cols;
             var w = viz.Cols + step;
             if ((w == 0) || (w > viz.Data.Length / viz.PixelFormat.BitsPerPixel * 8)) w = firstw;
@@ -295,6 +295,11 @@ namespace vizzy
         private void Chk_endian_Checked(object sender, RoutedEventArgs e)
         {
             viz.UseMSB0 = true;
+            int c = int.Parse(txt_width.Text);
+            c = c - c % (8 / viz.PixelFormat.BitsPerPixel);
+            txt_width.Text = c.ToString();
+            viz.SetCols(c);
+
             viz.UpdateImg();
         }
 

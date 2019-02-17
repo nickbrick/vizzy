@@ -318,7 +318,7 @@ namespace vizzy
 
         public void ClipImg()
         {
-            //Img.Clip = new RectangleGeometry(new Rect(0, 0, Cols * Scale, Height * Scale));
+            Img.Clip = new RectangleGeometry(new Rect(0, 0, Cols * Scale, Height * Scale));
         }
 
         public void SwitchBackground(int i)

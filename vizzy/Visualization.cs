@@ -109,9 +109,7 @@ namespace vizzy
             Img.Width = Double.NaN;
             Img.Height= Double.NaN;
 
-            //Img.SetValue(RenderOptions.BitmapScalingModeProperty, BitmapScalingMode.NearestNeighbor);
             RenderOptions.SetBitmapScalingMode(Img, BitmapScalingMode.NearestNeighbor);
-            //RenderOptions.SetEdgeMode(Img, EdgeMode.Aliased);
             Img.MinHeight = 200;
             Img.HorizontalAlignment = System.Windows.HorizontalAlignment.Left;
             Img.VerticalAlignment = System.Windows.VerticalAlignment.Top;
@@ -179,7 +177,6 @@ namespace vizzy
         private byte[] PaddedSubrray(byte[] input)
         {
             byte[] inputpadded = input;
-
             int bpp = PixelFormat.BitsPerPixel;
             int Binput = input.Length;
             int pxinput = Math.Max(Binput * 8 / bpp, 1);
@@ -207,14 +204,12 @@ namespace vizzy
                     Array.Copy(input, inputpadded, Binput); //copy original input into a larger array that divides evenly into h
                     Height = h;
                     byte[] output = new byte[Boutput];
-
                     for (int r = 0; r < h; r++)
                     {
                         byte[] row = new byte[stride];
                         Array.Copy(inputpadded, r * Bc, row, 0, Bc);
                         Array.Copy(row, 0, output, r * stride, stride);
                     }
-
                     Debug.WriteLine(String.Format("Binput: {0} \n pxoutput: {1}\n h: {2}\nstride: {3}\n", Binput, pxoutput, h, stride));
                     return output;
                 }
@@ -222,7 +217,6 @@ namespace vizzy
                 {
                     BitArray barrinputpadded = new BitArray(bc * h);
                     int datalength = (int)(Data.Length - VisOffset )* 8;
-                    //BitArray barrinput = new BitArray(input);
                     for (int i = 0; i < datalength; i++)
                     {
                         barrinputpadded[i] = BitData[(int)VisOffset * (8 / bpp) + i];
@@ -252,10 +246,7 @@ namespace vizzy
                                 if (I_in < barrinputpadded.Length)
                                     row[I_out] = barrinputpadded[I_in];
                             }
-
                         }
-                        
-
                         byte[] row_bytes = new byte[bstride / 8];
                         row.CopyTo(row_bytes, 0);
                         row_bytes.CopyTo(output, r * stride);

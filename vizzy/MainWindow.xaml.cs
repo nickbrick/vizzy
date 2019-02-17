@@ -191,11 +191,6 @@ namespace vizzy
             else
             {
                 chk_endian.Visibility = Visibility.Collapsed;
-                //if ((bool)chk_endian.IsChecked)
-                //{
-                //    chk_endian.IsChecked = false;
-                //    viz.UpdateImg();
-                //}
             }
         }
 
@@ -231,7 +226,6 @@ namespace vizzy
             var w = viz.Cols + step;
             if ((w == 0) || (w > viz.Data.Length / viz.PixelFormat.BitsPerPixel * 8)) w = firstw;
             viz.SetCols(w);
-
             txt_width.Text = w.ToString();
         }
 
@@ -278,7 +272,6 @@ namespace vizzy
                     viz.SetCols(w);
                     UpdateVizControls();
                 }
-
             }
         }
 
@@ -299,7 +292,6 @@ namespace vizzy
             c = c - c % (8 / viz.PixelFormat.BitsPerPixel);
             txt_width.Text = c.ToString();
             viz.SetCols(c);
-
             viz.UpdateImg();
         }
 
@@ -307,7 +299,6 @@ namespace vizzy
         {
             viz.UseMSB0 = false;
             viz.UpdateImg();
-
         }
     }
 }

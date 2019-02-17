@@ -16,5 +16,4 @@ Binary file visualization app in C#
 * Toggle between black and transparent background.
 
 ## Download
-* [Version 0.2.0](https://www.dropbox.com/s/uog99i0yapy7ftz/vizzy_0_2_0.rar?dl=1) Windows 32 & 64 bit
-* [Version 0.1.0](https://www.dropbox.com/s/sxazckzt0ovbj19/vizzy_0_1_0.zip?dl=1) Windows 32 & 64 bit
+[Version 0.2.1](https://www.dropbox.com/s/vqhc7j4286ulhju/vizzy_0_2_1.rar?dl=1) Windows 32 & 64 bit

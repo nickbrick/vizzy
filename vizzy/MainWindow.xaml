@@ -23,7 +23,7 @@
 
         <ToolBar Grid.ColumnSpan="1" Margin="0" Grid.Column="2">
             <Button x:Name="bt_col_minus" Content="&lt;" Height="27.2" VerticalAlignment="Center" Width="40" BorderBrush="Black" Click="Bt_col_minus_Click"/>
-            <TextBox x:Name="txt_width" Text="256" Height="26" VerticalAlignment="Center" PreviewMouseWheel="Txt_width_PreviewMouseWheel" MinWidth="36" PreviewKeyDown="Txt_width_PreviewKeyDown" TextAlignment="Center"/>
+            <TextBox x:Name="txt_width" Text="256" Height="26" VerticalAlignment="Center" PreviewMouseWheel="Txt_width_PreviewMouseWheel" MinWidth="26" PreviewKeyDown="Txt_width_PreviewKeyDown"/>
             <Button x:Name="bt_col_plus" Content="&gt;" Height="27.2" VerticalAlignment="Center" Width="40" BorderBrush="Black" Click="Bt_col_plus_Click"/>
             <Separator Margin="5,2"/>
 

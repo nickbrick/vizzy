@@ -123,6 +123,7 @@ namespace vizzy
             Point pos = e.GetPosition(Img);
             int x = (int)Math.Floor(pos.X / Scale);
             int y = (int)Math.Floor(pos.Y / Scale);
+            if (x > Cols - 1) x = Cols - 1;
             long pixel_ord = y * Cols + x;
             long offset = VisOffset + pixel_ord * PixelFormat.BitsPerPixel / 8;
             if (ImageClicked != null)
@@ -143,25 +144,14 @@ namespace vizzy
             BakeBitData();
 
         }
+
+        
         private void BakeBitData()
         {
             Debug.WriteLine("baking bit data..");
             BitData = new BitArray(Data);
-            var stack = new Stack<bool>(8);
-            for (int b = 0; b < BitData.Length; b++)
-            {
-                stack.Push(BitData[b]);
-                if (b % 8 == 7)
-                {
-                    for (int i = b - 7; i < b + 1; i++)
-                    {
-                        BitData[i] = stack.Pop();
-                    }
-                }
-            }
-
-
         }
+        
         private BitmapSource MakeBitmap()
         {
             if (VisOffset < 0) VisOffset = 0;
@@ -233,7 +223,7 @@ namespace vizzy
                     //BitArray barrinput = new BitArray(input);
                     for (int i = 0; i < datalength; i++)
                     {
-                        barrinputpadded[i] = BitData[(int)VisOffset + i];
+                        barrinputpadded[i] = BitData[(int)VisOffset * (8 / bpp) + i];
                     }
                     BitArray barroutput = new BitArray(stride * 8 * h);
                     bstride = stride * 8;
@@ -247,9 +237,9 @@ namespace vizzy
                             if (i < bc)
                             {
                                 int I_in = r * bc + i;
-                                int I_out = r * bstride + i;
+                                int I_out = (i / 8) * 8 + 7 - i % 8;
                                 if (I_in < barrinputpadded.Length)
-                                    row[i] = barrinputpadded[I_in];
+                                    row[I_out] = barrinputpadded[I_in];
                             }
 
                         }
@@ -317,7 +307,7 @@ namespace vizzy
 
         public void ClipImg()
         {
-            Img.Clip = new RectangleGeometry(new Rect(0, 0, Cols * Scale, Height * Scale));
+            //Img.Clip = new RectangleGeometry(new Rect(0, 0, Cols * Scale, Height * Scale));
         }
 
         public void SwitchBackground(int i)

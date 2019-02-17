@@ -184,6 +184,7 @@ namespace vizzy
             combo_pixel.SelectedIndex = 0;
             viz.SetPixel((PixelFormat)combo_pixel.SelectedItem); 
             if (viz.Cols * (int)combo_bpp.SelectedValue < 32) viz.SetCols((int)Math.Ceiling(32.0 / (int)combo_bpp.SelectedValue));
+            
         }
 
         private void Hexa_Drop(object sender, DragEventArgs e)

@@ -23,7 +23,7 @@
 
         <ToolBar Grid.ColumnSpan="1" Margin="0" Grid.Column="2">
             <Button x:Name="bt_col_minus" Content="&lt;" Height="27.2" VerticalAlignment="Center" Width="40" BorderBrush="Black" Click="Bt_col_minus_Click"/>
-            <TextBox x:Name="txt_width" Text="256" Height="26" VerticalAlignment="Center" PreviewMouseWheel="Txt_width_PreviewMouseWheel" MinWidth="26" PreviewKeyDown="Txt_width_PreviewKeyDown"/>
+            <TextBox x:Name="txt_width" Text="256" Height="26" VerticalAlignment="Center" PreviewMouseWheel="Txt_width_PreviewMouseWheel" MinWidth="36" PreviewKeyDown="Txt_width_PreviewKeyDown" TextAlignment="Center"/>
             <Button x:Name="bt_col_plus" Content="&gt;" Height="27.2" VerticalAlignment="Center" Width="40" BorderBrush="Black" Click="Bt_col_plus_Click"/>
             <Separator Margin="5,2"/>
 
@@ -31,6 +31,7 @@
             <ComboBox x:Name="combo_bpp" HorizontalAlignment="Left" VerticalAlignment="Center" Width="55" SelectedIndex="0" Margin="0,8,0,7.2" PreviewMouseWheel="Combo_bpp_PreviewMouseWheel"/>
 
             <ComboBox x:Name="combo_pixel" HorizontalAlignment="Left" VerticalAlignment="Center" Width="209" SelectedIndex="0" Margin="0,8,0,7.2" PreviewMouseWheel="Combo_pixel_PreviewMouseWheel"/>
+            <!--<CheckBox x:Name="chk_endian" HorizontalAlignment="Left" VerticalAlignment="Center" Content="Endianness" Visibility="Collapsed" Checked="Chk_endian_Checked" Unchecked="Chk_endian_Unchecked" />-->
             <Separator Margin="5,2"/>
 
             <ToggleButton Content="" Height="28" VerticalAlignment="Center" Width="28" HorizontalAlignment="Center" Checked="ToggleButton_Checked" Unchecked="ToggleButton_Unchecked">

@@ -4,15 +4,16 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:vizzy"
-        xmlns:control="clr-namespace:WpfHexaEditor;assembly=WPFHexaEditor"
+        xmlns:control="clr-namespace:WpfHexaEditor;assembly=WPFHexaEditor" 
+        xmlns:bitmap="clr-namespace:ImageSnappingToPixels;assembly=ImageSnappingToPixels"
         mc:Ignorable="d"
-        Title="MainWindow" Height="960" Width="1714.556" Loaded="Window_Loaded">
+        Title="MainWindow" Height="960" Width="1714.556" Loaded="Window_Loaded" UseLayoutRounding="True">
 
     <Grid x:Name="grid">
         <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="851*"/>
+            <ColumnDefinition Width="1*"/>
             <ColumnDefinition Width="5"/>
-            <ColumnDefinition Width="852*"/>
+            <ColumnDefinition Width="1*"/>
         </Grid.ColumnDefinitions>
         <Grid.RowDefinitions>
             <RowDefinition Height="40"/>
@@ -42,14 +43,17 @@
             </ToggleButton>
             <Separator Margin="5,2"/>
             <Label x:Name="lbl_zoom" Content="1.0x" Height="26" VerticalAlignment="Center"/>
-
+            <Separator Margin="5,2"/>
+            <Button x:Name="bt_save" Content="💾" Click="bt_save_Click"></Button>
 
         </ToolBar>
 
 
         <GridSplitter HorizontalAlignment="Center" Width="5" ShowsPreview="True" ResizeBehavior="PreviousAndNext" Grid.Column="1" Grid.Row="1"/>
         <ScrollViewer x:Name="scrollViewer" Margin="0" Grid.Column="2" Grid.Row="1" PanningMode="Both" HorizontalScrollBarVisibility="Auto" Background="Black" >
-            <Image x:Name="img" Margin="0" RenderOptions.BitmapScalingMode="NearestNeighbor" RenderOptions.EdgeMode="Aliased" MinHeight="200" Grid.Column="1" Width="16" HorizontalAlignment="Left" VerticalAlignment="Top" IsHitTestVisible="False"/>
+            <StackPanel x:Name="imgWrapper" Background="#FFFF7D0C">
+                <bitmap:Bitmap x:Name="img" RenderOptions.BitmapScalingMode="NearestNeighbor" RenderOptions.EdgeMode="Aliased" Grid.Column="1" IsHitTestVisible="False" SnapsToDevicePixels="True"/>
+            </StackPanel>
         </ScrollViewer>
     </Grid>
 </Window>

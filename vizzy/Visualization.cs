@@ -15,6 +15,7 @@ namespace vizzy
 {
     public class Visualization
     {
+        private float _systemScaling = 1 / 96f;
         public int Cols;
         private int Width;
         public int Height;
@@ -25,14 +26,17 @@ namespace vizzy
         private BitArray BitData;
         public bool UseMSB0;
         public PixelFormat PixelFormat;
-        public Image Img;
+        public ImageSnappingToPixels.Bitmap Img;
+
         public ScrollViewer ScrollViewer;
+        public Canvas imgWrapper;
 
         public event EventHandler ImageUpdated;
         public event EventHandler<ImageClickedArgs> ImageClicked;
         public EventArgs e = null;
         public delegate void EventHandler(Visualization v, EventArgs e);
         public delegate void EventHandler<ImageClickedArgs>(Visualization v, ImageClickedArgs e);
+
         public class ImageClickedArgs : EventArgs
         {
             public long ClickedOffset;
@@ -73,23 +77,19 @@ namespace vizzy
             Width = 16;
             PixelFormat = PixelFormats.Gray8;
             UseMSB0 = false;
-            Scale = 18.4884258895036416;
+            Scale = 1;
             InitScrollViewer();
             InitImg();
-            
-
+            using (System.Drawing.Graphics graphics = System.Drawing.Graphics.FromHwnd(IntPtr.Zero))
+            {
+                _systemScaling *= graphics.DpiX;
+            }
         }
-
-
-
         public Visualization(string path) : this()
         {
             LoadData(path);
             UpdateImg();
-
         }
-
-
         private void InitScrollViewer()
         {
             ScrollViewer = new ScrollViewer();
@@ -100,29 +100,22 @@ namespace vizzy
             ScrollViewer.PreviewKeyDown += ScrollViewer_PreviewKeyDown;
             ScrollViewer.PreviewMouseWheel += ScrollViewer_PreviewMouseWheel;
             ScrollViewer.ScrollChanged += ScrollViewer_ScrollChanged;
-            //Grid.Column = "2" Grid.Row = "1" 
+            imgWrapper = new Canvas() {HorizontalAlignment = HorizontalAlignment.Left, VerticalAlignment = VerticalAlignment.Top };
+            ScrollViewer.Content = imgWrapper;
         }
         private void InitImg()
         {
-            Img = new Image();
-            Img.Margin = new System.Windows.Thickness(0);
-            Img.Width = Double.NaN;
-            Img.Height= Double.NaN;
-
+            Img = new ImageSnappingToPixels.Bitmap();
             RenderOptions.SetBitmapScalingMode(Img, BitmapScalingMode.NearestNeighbor);
-            Img.MinHeight = 200;
-            Img.HorizontalAlignment = System.Windows.HorizontalAlignment.Left;
-            Img.VerticalAlignment = System.Windows.VerticalAlignment.Top;
             Img.IsHitTestVisible = true;
-            ScrollViewer.Content = Img;
+            imgWrapper.Children.Add(Img);
             Img.PreviewMouseLeftButtonUp += Img_PreviewMouseLeftButtonUp;
         }
-
         private void Img_PreviewMouseLeftButtonUp(object sender, MouseButtonEventArgs e)
         {
             Point pos = e.GetPosition(Img);
-            int x = (int)Math.Floor(pos.X / Scale);
-            int y = (int)Math.Floor(pos.Y / Scale);
+            int x = (int)Math.Floor(pos.X * _systemScaling);
+            int y = (int)Math.Floor(pos.Y * _systemScaling);
             if (x > Cols - 1) x = Cols - 1;
             long pixel_ord = y * Cols + x;
             long offset = VisOffset + pixel_ord * PixelFormat.BitsPerPixel / 8;
@@ -132,7 +125,6 @@ namespace vizzy
             }
             Debug.WriteLine(offset);
         }
-
         public void LoadData(string path)
         {
             using (System.IO.FileStream fs = System.IO.File.Open(path, System.IO.FileMode.Open, System.IO.FileAccess.Read, System.IO.FileShare.ReadWrite))
@@ -142,25 +134,21 @@ namespace vizzy
                 fs.Read(Data, 0, numBytesToRead);
             }
             BakeBitData();
-
         }
-
-        
         private void BakeBitData()
         {
             Debug.WriteLine("baking bit data..");
             BitData = new BitArray(Data);
         }
-        
         private BitmapSource MakeBitmap()
         {
             if (VisOffset < 0) VisOffset = 0;
-            int subbaray_length = (int)(Data.Length - VisOffset);
-            //int subbaray_length = (int)Math.Min((long)Math.Pow(512, 2), Data.Length - VisOffset) ;
-            byte[] subarray = new byte[subbaray_length];
-            
-            Array.ConstrainedCopy(Data, (int)VisOffset, subarray, 0, subbaray_length);
-            subarray = PaddedSubrray(subarray);
+            int subarray_length = (int)(Data.Length - VisOffset);
+            //int subarray_length = (int)Math.Min((long)Math.Pow(512, 2), Data.Length - VisOffset) ;
+            byte[] subarray = new byte[subarray_length];
+
+            Array.ConstrainedCopy(Data, (int)VisOffset, subarray, 0, subarray_length);
+            subarray = PaddedSubarray(subarray);
             int stride = GetStride(Cols, PixelFormat.BitsPerPixel);
             try
             {
@@ -174,7 +162,7 @@ namespace vizzy
             }
         }
 
-        private byte[] PaddedSubrray(byte[] input)
+        private byte[] PaddedSubarray(byte[] input)
         {
             byte[] inputpadded = input;
             int bpp = PixelFormat.BitsPerPixel;
@@ -206,6 +194,10 @@ namespace vizzy
                     byte[] output = new byte[Boutput];
                     for (int r = 0; r < h; r++)
                     {
+                        if (r > 32767)
+                        {
+                            int x = 0;
+                        }
                         byte[] row = new byte[stride];
                         Array.Copy(inputpadded, r * Bc, row, 0, Bc);
                         Array.Copy(row, 0, output, r * stride, stride);
@@ -216,7 +208,7 @@ namespace vizzy
                 else if (bpp < 8) // bit padding
                 {
                     BitArray barrinputpadded = new BitArray(bc * h);
-                    int datalength = (int)(Data.Length - VisOffset )* 8;
+                    int datalength = (int)(Data.Length - VisOffset) * 8;
                     for (int i = 0; i < datalength; i++)
                     {
                         barrinputpadded[i] = BitData[(int)VisOffset * (8 / bpp) + i];
@@ -241,7 +233,6 @@ namespace vizzy
                                 else
                                 {
                                     I_out = i;
-
                                 }
                                 if (I_in < barrinputpadded.Length)
                                     row[I_out] = barrinputpadded[I_in];
@@ -255,9 +246,6 @@ namespace vizzy
                 }
             }
             return input;
-
-
-
         }
         private int GetStride(int w, int bpp)
         {
@@ -299,7 +287,8 @@ namespace vizzy
         public void UpdateImg()
         {
             Img.Source = MakeBitmap();
-            Img.Width = Width * Scale;
+            Img.InvalidateMeasure();
+            Img.InvalidateVisual();
             ClipImg();
             if (ImageUpdated != null)
             {
@@ -310,6 +299,8 @@ namespace vizzy
         public void ClipImg()
         {
             Img.Clip = new RectangleGeometry(new Rect(0, 0, Cols * Scale, Height * Scale));
+            imgWrapper.Width = Cols * Scale / _systemScaling;
+            imgWrapper.Height = Height * Scale / _systemScaling;
         }
 
         public void SwitchBackground(int i)
@@ -332,16 +323,18 @@ namespace vizzy
             {
                 if (e.Delta > 0)
                 {
-                    Scale *= 1.2;
-                    Img.Width = Width * Scale;
-                    Img.Height *= Scale;
+                    Scale *= Math.Pow(2, 0.25);
+                    var scaleTransform = new ScaleTransform(Scale, Scale);
+                    Img.RenderTransform = scaleTransform;
+                    imgWrapper.LayoutTransform = scaleTransform;
                 }
                 else if (e.Delta < 0)
                 {
-                    Scale /= 1.2;
+                    Scale /= Math.Pow(2,0.25);
                     if (Scale < 1) Scale = 1;
-                    Img.Width = Width * Scale;
-                    Img.Height /= Scale;
+                    var scaleTransform = new ScaleTransform(Scale, Scale);
+                    Img.RenderTransform = scaleTransform;
+                    imgWrapper.LayoutTransform = scaleTransform;
                 }
                 ClipImg();
                 if (ImageUpdated != null)
@@ -352,7 +345,6 @@ namespace vizzy
             else if (Keyboard.Modifiers == ModifierKeys.Shift)
             {
                 (sender as ScrollViewer).ScrollToVerticalOffset((sender as ScrollViewer).ContentVerticalOffset);
-
                 (sender as ScrollViewer).ScrollToHorizontalOffset((sender as ScrollViewer).ContentHorizontalOffset - e.Delta);
             }
         }

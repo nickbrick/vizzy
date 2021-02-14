@@ -26,7 +26,8 @@ namespace vizzy
         public vizzy.Visualization viz = new Visualization();
         List<PixelFormat> list_all_pixelformat;
         List<PixelFormat> list_combo_pixel_items;
-
+        public bool UseSoftwareRendering = true;
+        private string _filepath;
 
 
         public MainWindow(string file)
@@ -149,6 +150,7 @@ namespace vizzy
                 fs.Read(hexData, 0, numBytesToRead);
                 hexa.Stream = new System.IO.MemoryStream(hexData);
             }
+            _filepath = file;
             this.SetTitle(file);
             viz.LoadData(file);
             viz.UpdateImg();
@@ -266,10 +268,14 @@ namespace vizzy
         {
             if (e.Key == Key.Enter)
             {
-                int w;
-                if (int.TryParse(txt_width.Text,out w))
+                int c;
+                if (int.TryParse(txt_width.Text,out c))
                 {
-                    viz.SetCols(w);
+                    if (viz.UseMSB0)
+                    {
+                        c = c - c % (8 / viz.PixelFormat.BitsPerPixel);
+                    }
+                    viz.SetCols(c);
                     UpdateVizControls();
                 }
             }
@@ -277,7 +283,7 @@ namespace vizzy
 
         private void Window_Loaded(object sender, RoutedEventArgs e)
         {
-            if (true)
+            if (UseSoftwareRendering)
             {
                 HwndSource hwndSource = PresentationSource.FromVisual(this) as HwndSource;
                 HwndTarget hwndTarget = hwndSource.CompositionTarget;
@@ -290,8 +296,9 @@ namespace vizzy
             viz.UseMSB0 = true;
             int c = int.Parse(txt_width.Text);
             c = c - c % (8 / viz.PixelFormat.BitsPerPixel);
-            txt_width.Text = c.ToString();
+            //txt_width.Text = c.ToString();
             viz.SetCols(c);
+            UpdateVizControls();
             viz.UpdateImg();
         }
 
@@ -299,6 +306,17 @@ namespace vizzy
         {
             viz.UseMSB0 = false;
             viz.UpdateImg();
+        }
+
+        private void bt_save_Click(object sender, RoutedEventArgs e)
+        {
+            using (var fs = new System.IO.FileStream(System.IO.Path.ChangeExtension(_filepath, ".bmp"), System.IO.FileMode.OpenOrCreate))
+            {
+                BmpBitmapEncoder encoder = new BmpBitmapEncoder();
+                BitmapFrame outputFrame = BitmapFrame.Create(viz.Img.Source);
+                encoder.Frames.Add(outputFrame);
+                encoder.Save(fs);
+            }
         }
     }
 }

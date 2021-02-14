@@ -14,6 +14,7 @@ Binary file visualization app in C#
 * Select color depth and pixel format.
 * For sub-byte color depth, toggle between LSB0 and MSB0 bit endianness. MSB0 doesn't support an arbitrary number of columns.
 * Toggle between black and transparent background.
+* Save the visualization as bitmap.
 
 ## Download
-[Version 0.2.1](https://www.dropbox.com/s/vqhc7j4286ulhju/vizzy_0_2_1.rar?dl=1) Windows 32 & 64 bit
+[Version 0.3.0](https://github.com/nickbrick/vizzy/releases/tag/v0.3.0) Windows 32 & 64 bit

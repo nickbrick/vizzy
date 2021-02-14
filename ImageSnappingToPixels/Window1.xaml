@@ -1,0 +1,121 @@
+﻿<Window x:Class="ImageSnappingToPixels.Window1"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="clr-namespace:ImageSnappingToPixels"
+    Title="Blurry Bitmaps" Height="300" Width="600"
+    KeyDown="ShiftContent">
+    <Grid x:Name="root">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+        <StackPanel Orientation="Horizontal" Grid.Row="0" RenderTransformOrigin="0.5,0.5">
+            <StackPanel.RenderTransform>
+                <TransformGroup>
+                    <ScaleTransform ScaleX="2" ScaleY="2"/>
+                    <SkewTransform/>
+                    <RotateTransform/>
+                    <TranslateTransform/>
+                </TransformGroup>
+            </StackPanel.RenderTransform>
+            <local:Bitmap Source="small_h_red.png" />
+            <local:Bitmap Source="small_v_green.png" />
+            <local:Bitmap Source="small_h_blue.png" />
+            <local:Bitmap Source="small_v_red.png" />
+            <local:Bitmap Source="small_h_green.png" />
+            <local:Bitmap Source="small_v_blue.png" />
+            <local:Bitmap Source="small_h_red.png" />
+            <local:Bitmap Source="small_v_green.png" />
+            <local:Bitmap Source="small_h_blue.png" />
+            <local:Bitmap Source="small_v_red.png" />
+            <local:Bitmap Source="small_h_green.png" />
+            <local:Bitmap Source="small_v_blue.png" />
+            <local:Bitmap Source="small_h_red.png" />
+            <local:Bitmap Source="small_v_green.png" />
+            <local:Bitmap Source="small_h_blue.png" />
+            <local:Bitmap Source="small_v_red.png" />
+            <local:Bitmap Source="small_h_green.png" />
+            <local:Bitmap Source="small_v_blue.png" />
+            <local:Bitmap Source="small_h_red.png" />
+            <local:Bitmap Source="small_v_green.png" />
+            <local:Bitmap Source="small_h_blue.png" />
+            <local:Bitmap Source="small_v_red.png" />
+            <local:Bitmap Source="small_h_green.png" />
+            <local:Bitmap Source="small_v_blue.png" />
+            <local:Bitmap Source="small_h_red.png" />
+            <local:Bitmap Source="small_v_green.png" />
+            <local:Bitmap Source="small_h_blue.png" />
+            <local:Bitmap Source="small_v_red.png" />
+            <local:Bitmap Source="small_h_green.png" />
+            <local:Bitmap Source="small_v_blue.png" />
+            <local:Bitmap Source="small_h_red.png" />
+            <local:Bitmap Source="small_v_green.png" />
+            <local:Bitmap Source="small_h_blue.png" />
+            <local:Bitmap Source="small_v_red.png" />
+            <local:Bitmap Source="small_h_green.png" />
+            <local:Bitmap Source="small_v_blue.png" />
+            <local:Bitmap Source="small_h_red.png" />
+            <local:Bitmap Source="small_v_green.png" />
+            <local:Bitmap Source="small_h_blue.png" />
+            <local:Bitmap Source="small_v_red.png" />
+            <local:Bitmap Source="small_h_green.png" />
+            <local:Bitmap Source="small_v_blue.png" />
+            <local:Bitmap Source="small_h_red.png" />
+            <local:Bitmap Source="small_v_green.png" />
+            <local:Bitmap Source="small_h_blue.png" />
+            <local:Bitmap Source="small_v_red.png" />
+            <local:Bitmap Source="small_h_green.png" />
+            <local:Bitmap Source="small_v_blue.png" />
+        </StackPanel>
+        <StackPanel Orientation="Horizontal" Grid.Row="1">
+            <Image Source="small_h_red.png" />
+            <Image Source="small_v_green.png" />
+            <Image Source="small_h_blue.png" />
+            <Image Source="small_v_red.png" />
+            <Image Source="small_h_green.png" />
+            <Image Source="small_v_blue.png" />
+            <Image Source="small_h_red.png" />
+            <Image Source="small_v_green.png" />
+            <Image Source="small_h_blue.png" />
+            <Image Source="small_v_red.png" />
+            <Image Source="small_h_green.png" />
+            <Image Source="small_v_blue.png" />
+            <Image Source="small_h_red.png" />
+            <Image Source="small_v_green.png" />
+            <Image Source="small_h_blue.png" />
+            <Image Source="small_v_red.png" />
+            <Image Source="small_h_green.png" />
+            <Image Source="small_v_blue.png" />
+            <Image Source="small_h_red.png" />
+            <Image Source="small_v_green.png" />
+            <Image Source="small_h_blue.png" />
+            <Image Source="small_v_red.png" />
+            <Image Source="small_h_green.png" />
+            <Image Source="small_v_blue.png" />
+            <Image Source="small_h_red.png" />
+            <Image Source="small_v_green.png" />
+            <Image Source="small_h_blue.png" />
+            <Image Source="small_v_red.png" />
+            <Image Source="small_h_green.png" />
+            <Image Source="small_v_blue.png" />
+            <Image Source="small_h_red.png" />
+            <Image Source="small_v_green.png" />
+            <Image Source="small_h_blue.png" />
+            <Image Source="small_v_red.png" />
+            <Image Source="small_h_green.png" />
+            <Image Source="small_v_blue.png" />
+            <Image Source="small_h_red.png" />
+            <Image Source="small_v_green.png" />
+            <Image Source="small_h_blue.png" />
+            <Image Source="small_v_red.png" />
+            <Image Source="small_h_green.png" />
+            <Image Source="small_v_blue.png" />
+            <Image Source="small_h_red.png" />
+            <Image Source="small_v_green.png" />
+            <Image Source="small_h_blue.png" />
+            <Image Source="small_v_red.png" />
+            <Image Source="small_h_green.png" />
+            <Image Source="small_v_blue.png" />
+        </StackPanel>
+    </Grid>
+</Window>

@@ -30,6 +30,7 @@ namespace vizzy
 
         public ScrollViewer ScrollViewer;
         public Canvas imgWrapper;
+        public Label lblVisEnd;
 
         public event EventHandler ImageUpdated;
         public event EventHandler<ImageClickedArgs> ImageClicked;
@@ -79,12 +80,15 @@ namespace vizzy
             UseMSB0 = false;
             Scale = 1;
             InitScrollViewer();
+            InitVisEnd();
             InitImg();
             using (System.Drawing.Graphics graphics = System.Drawing.Graphics.FromHwnd(IntPtr.Zero))
             {
                 _systemScaling *= graphics.DpiX;
             }
         }
+
+
         public Visualization(string path) : this()
         {
             LoadData(path);
@@ -100,7 +104,12 @@ namespace vizzy
             ScrollViewer.PreviewKeyDown += ScrollViewer_PreviewKeyDown;
             ScrollViewer.PreviewMouseWheel += ScrollViewer_PreviewMouseWheel;
             ScrollViewer.ScrollChanged += ScrollViewer_ScrollChanged;
-            imgWrapper = new Canvas() {HorizontalAlignment = HorizontalAlignment.Left, VerticalAlignment = VerticalAlignment.Top };
+            imgWrapper = new Canvas()
+            {
+                HorizontalAlignment = HorizontalAlignment.Left,
+                VerticalAlignment = VerticalAlignment.Top,
+                Background = new SolidColorBrush(Color.FromArgb(0xff, 0x1e, 0x1e, 0x1e))
+            };
             ScrollViewer.Content = imgWrapper;
         }
         private void InitImg()
@@ -109,8 +118,21 @@ namespace vizzy
             RenderOptions.SetBitmapScalingMode(Img, BitmapScalingMode.NearestNeighbor);
             Img.IsHitTestVisible = true;
             imgWrapper.Children.Add(Img);
+            imgWrapper.Children.Add(lblVisEnd);
             Img.PreviewMouseLeftButtonUp += Img_PreviewMouseLeftButtonUp;
         }
+        private void InitVisEnd()
+        {
+            lblVisEnd = new Label
+            {
+                Content = "Row limit reached",
+                Background = new SolidColorBrush(Color.FromArgb(0xff, 0x1e, 0x1e, 0x1e)),
+                Foreground = new SolidColorBrush(Color.FromArgb(0xff, 0x92, 0xca, 0xf4)),
+                HorizontalAlignment = HorizontalAlignment.Left,
+                VerticalAlignment= VerticalAlignment.Top
+            };
+        }
+
         private void Img_PreviewMouseLeftButtonUp(object sender, MouseButtonEventArgs e)
         {
             Point pos = e.GetPosition(Img);
@@ -298,7 +320,13 @@ namespace vizzy
 
         public void ClipImg()
         {
-            Img.Clip = new RectangleGeometry(new Rect(0, 0, Cols * Scale, Height * Scale));
+            Img.Clip = new RectangleGeometry(new Rect(0, 0, Cols * Scale, Math.Min(Height * Scale, 0x8000) / _systemScaling));
+            if (Height >= 0x8000)
+            {
+                lblVisEnd.Margin = new Thickness(0, 0x8000 * Scale / _systemScaling, 0, 0);
+                lblVisEnd.Visibility = Visibility.Visible;
+                lblVisEnd.RenderTransform = new ScaleTransform(1/Scale, 1/Scale);
+            }
             imgWrapper.Width = Cols * Scale / _systemScaling;
             imgWrapper.Height = Height * Scale / _systemScaling;
         }
@@ -330,7 +358,7 @@ namespace vizzy
                 }
                 else if (e.Delta < 0)
                 {
-                    Scale /= Math.Pow(2,0.25);
+                    Scale /= Math.Pow(2, 0.25);
                     if (Scale < 1) Scale = 1;
                     var scaleTransform = new ScaleTransform(Scale, Scale);
                     Img.RenderTransform = scaleTransform;

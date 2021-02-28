@@ -39,7 +39,7 @@ namespace vizzy
             Grid.SetRow(viz.ScrollViewer, 1);
             grid.Children.Add(viz.ScrollViewer);
             LoadFile(file);
-            
+
 
             viz.UpdateImg();
             UpdateVizControls();
@@ -114,22 +114,22 @@ namespace vizzy
         private void InitHexa()
         {
             hexa.Height = Double.NaN;
-            hexa.Width= Double.NaN;
+            hexa.Width = Double.NaN;
 
             Grid.SetRow(hexa, 1);
             Grid.SetColumn(hexa, 0);
 
             hexa.Margin = new Thickness(0);
             hexa.Background = new SolidColorBrush(Color.FromArgb(0xff, 0x1e, 0x1e, 0x1e));
-            hexa.Foreground= new SolidColorBrush(Color.FromArgb(0xff, 0x92, 0xca, 0xf4));
+            hexa.Foreground = new SolidColorBrush(Color.FromArgb(0xff, 0x92, 0xca, 0xf4));
             hexa.AllowAutoHightLighSelectionByte = false;
             hexa.AllowDrop = true;
             hexa.ReadOnlyMode = true;
-            
+
             hexa.FileDroppingConfirmation = false;
             hexa.Drop += Hexa_Drop;
             hexa.SelectionStartChanged += Hexa_SelectionStartChanged;
-            
+
             grid.Children.Add(hexa);
         }
 
@@ -140,7 +140,7 @@ namespace vizzy
             combo_pixel.SelectedValue = viz.PixelFormat;
             lbl_zoom.Content = viz.Scale.ToString("0.0") + " x";
         }
-        
+
         public void LoadFile(string file)
         {
             using (System.IO.FileStream fs = System.IO.File.Open(file, System.IO.FileMode.Open, System.IO.FileAccess.Read, System.IO.FileShare.ReadWrite))
@@ -184,7 +184,7 @@ namespace vizzy
             List<PixelFormat> pixelsublist = list_all_pixelformat.Where(item => item.BitsPerPixel == (int)combo_bpp.SelectedValue).ToList<PixelFormat>();
             combo_pixel.ItemsSource = pixelsublist;
             combo_pixel.SelectedIndex = 0;
-            viz.SetPixel((PixelFormat)combo_pixel.SelectedItem); 
+            viz.SetPixel((PixelFormat)combo_pixel.SelectedItem);
             if (viz.Cols * (int)combo_bpp.SelectedValue < 32) viz.SetCols((int)Math.Ceiling(32.0 / (int)combo_bpp.SelectedValue));
             if (viz.PixelFormat.BitsPerPixel < 8)
             {
@@ -269,7 +269,7 @@ namespace vizzy
             if (e.Key == Key.Enter)
             {
                 int c;
-                if (int.TryParse(txt_width.Text,out c))
+                if (int.TryParse(txt_width.Text, out c))
                 {
                     if (viz.UseMSB0)
                     {

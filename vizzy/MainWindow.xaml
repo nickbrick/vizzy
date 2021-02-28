@@ -51,7 +51,7 @@
 
         <GridSplitter HorizontalAlignment="Center" Width="5" ShowsPreview="True" ResizeBehavior="PreviousAndNext" Grid.Column="1" Grid.Row="1"/>
         <ScrollViewer x:Name="scrollViewer" Margin="0" Grid.Column="2" Grid.Row="1" PanningMode="Both" HorizontalScrollBarVisibility="Auto" Background="Black" >
-            <StackPanel x:Name="imgWrapper" Background="#FFFF7D0C">
+            <StackPanel x:Name="imgWrapper" Background="#FF796F6F">
                 <bitmap:Bitmap x:Name="img" RenderOptions.BitmapScalingMode="NearestNeighbor" RenderOptions.EdgeMode="Aliased" Grid.Column="1" IsHitTestVisible="False" SnapsToDevicePixels="True"/>
             </StackPanel>
         </ScrollViewer>

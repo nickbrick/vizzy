@@ -211,7 +211,7 @@ namespace vizzy
                     int datalength = (int)(Data.Length - VisOffset) * 8;
                     for (int i = 0; i < datalength; i++)
                     {
-                        barrinputpadded[i] = BitData[(int)VisOffset * (8 / bpp) + i];
+                        barrinputpadded[i] = BitData[(int)VisOffset * 8 + i];
                     }
                     BitArray barroutput = new BitArray(stride * 8 * h);
                     bstride = stride * 8;

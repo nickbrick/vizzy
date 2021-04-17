@@ -16,5 +16,8 @@ Binary file visualization app in C#
 * Toggle between black and transparent background.
 * Save the visualization as bitmap.
 
+
+## Things you cannot do
+* Cannot view past 32768 rows from the current offset, but you can save images taller than that and view them in your image viewer.
 ## Download
-[Version 0.3.0](https://github.com/nickbrick/vizzy/releases/tag/v0.3.0) Windows 32 & 64 bit
+[Version 0.4.0](https://github.com/nickbrick/vizzy/releases/tag/v0.4.0) Windows 32 & 64 bit

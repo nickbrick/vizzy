@@ -327,6 +327,10 @@ namespace vizzy
                 lblVisEnd.Visibility = Visibility.Visible;
                 lblVisEnd.RenderTransform = new ScaleTransform(1/Scale, 1/Scale);
             }
+            else
+            {
+                lblVisEnd.Visibility = Visibility.Hidden;
+            }
             imgWrapper.Width = Cols * Scale / _systemScaling;
             imgWrapper.Height = Height * Scale / _systemScaling;
         }
